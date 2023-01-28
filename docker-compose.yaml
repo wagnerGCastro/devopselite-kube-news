@@ -1,0 +1,26 @@
+version: "3"
+services:
+  server:
+    build:
+      context: ./
+      target: production-build-stage
+    ports:
+      - "3079:3079"
+    depends_on:
+      - database
+
+  database:
+    image: "postgres:15.0"
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: kubedevnews
+      POSTGRES_PASSWORD: "Pg#123"
+      POSTGRES_DB: kubedevnews
+    volumes:
+      - ./.docker/data/postgress/:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
